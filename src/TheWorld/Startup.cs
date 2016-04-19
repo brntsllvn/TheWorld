@@ -3,7 +3,9 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
+using TheWorld.Models;
 using TheWorld.Services;
 
 namespace TheWorld
@@ -26,6 +28,15 @@ namespace TheWorld
         {
             services.AddMvc();
 
+            services.AddLogging();
+
+            services.AddEntityFramework()
+                .AddSqlServer()
+                .AddDbContext<WorldContext>();
+
+            services.AddTransient<WorldContextSeedData>();
+            services.AddScoped<IWorldRepository, WorldRepository>();
+
 #if DEBUG
             services.AddScoped<IMailService, DebugMailService>();
 #else
@@ -33,8 +44,10 @@ namespace TheWorld
 #endif
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, WorldContextSeedData seeder, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddDebug(LogLevel.Warning);
+
             app.UseStaticFiles();
 
             app.UseMvc(config =>
@@ -45,6 +58,8 @@ namespace TheWorld
                   defaults: new { controller = "App", action = "Index" }
                   );
             });
+
+            seeder.EnsureSeedData();
         }
 
         public static void Main(string[] args) => WebApplication.Run<Startup>(args);
