@@ -1,21 +1,4 @@
-﻿
-
-#main {
-    background-color: #eee;
-    padding: 4px;
-    margin: 0;
-}
-
-#footer {
-    background-color: #222;
-    color: #eee;
-    padding: 8px 5px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-}
-
-.headshot {
+﻿.headshot {
     max-width: 50px;
     border: 1px solid #222;
     padding: 3px;
